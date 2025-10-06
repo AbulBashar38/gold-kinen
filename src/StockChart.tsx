@@ -299,9 +299,7 @@ export default function StockChart() {
               <TrendingUp className="text-green-600" size={20} />
               <span className="text-white">year to date</span>
             </div>
-            <p className="text-white text-sm">
-              Closed: 30 Oct, 5:59 am GMT+6
-            </p>
+            <p className="text-white text-sm">Closed: 30 Oct, 5:59 am GMT+6</p>
           </div>
         </div>
 
@@ -313,7 +311,7 @@ export default function StockChart() {
               className={`px-4 py-2 text-sm font-medium transition-colors ${
                 selectedRange === range
                   ? "text-blue-600 bg-blue-50 rounded-md"
-                  : "text-white hover:text-gray-900"
+                  : "text-white hover:text-gray-300"
               }`}
             >
               {range}
