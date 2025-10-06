@@ -252,7 +252,7 @@ export default function StockChart() {
           display: false,
         },
         ticks: {
-          color: "#9ca3af",
+          color: "#D1E1FF",
           font: {
             size: 13,
           },
@@ -281,25 +281,25 @@ export default function StockChart() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-white p-8">
+    <div className="w-full min-h-screen bg-transparent p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-start mb-8">
           <div>
-            <h1 className="text-6xl font-light text-gray-900 mb-3">
+            <h1 className="text-6xl font-light text-white mb-3">
               {currentPrice.toLocaleString("en-US", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
-              <span className="text-3xl text-gray-400 ml-2">USD</span>
+              <span className="text-3xl text-white ml-2">USD</span>
             </h1>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-xl text-green-600 font-normal">
                 +{yearChange.toFixed(2)} ({yearChangePercent}%)
               </span>
               <TrendingUp className="text-green-600" size={20} />
-              <span className="text-gray-500">year to date</span>
+              <span className="text-white">year to date</span>
             </div>
-            <p className="text-gray-400 text-sm">
+            <p className="text-white text-sm">
               Closed: 30 Oct, 5:59 am GMT+6
             </p>
           </div>
@@ -313,7 +313,7 @@ export default function StockChart() {
               className={`px-4 py-2 text-sm font-medium transition-colors ${
                 selectedRange === range
                   ? "text-blue-600 bg-blue-50 rounded-md"
-                  : "text-gray-500 hover:text-gray-900"
+                  : "text-white hover:text-gray-900"
               }`}
             >
               {range}
@@ -322,13 +322,16 @@ export default function StockChart() {
         </div>
 
         <div className="relative">
-          <div className="absolute right-8 top-2 text-xs text-gray-400">
+          <div className="absolute right-8 top-2 text-xs text-white">
             {maxPrice.toLocaleString("en-US", { maximumFractionDigits: 1 })}
           </div>
-          <div className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+          <div className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-white">
             AVG
           </div>
-          <div className="absolute right-8 bottom-12 text-xs text-gray-400">
+          <div
+            className="absolute right-8 bottom-12 text-xs text-gray-400"
+            style={{ color: "#D1E1FF" }}
+          >
             {minPrice.toLocaleString("en-US", { maximumFractionDigits: 1 })}
           </div>
 
