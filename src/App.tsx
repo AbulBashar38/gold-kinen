@@ -1,7 +1,8 @@
-import StockChart from './StockChart';
+import { RouterProvider } from "react-router/dom";
+import router from "./router/Routes";
 
 function App() {
-  return <StockChart />;
+  return <RouterProvider router={router} />;
 }
 
 export default App;
