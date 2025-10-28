@@ -10,6 +10,7 @@ import {
   Tooltip,
 } from "chart.js";
 import { TrendingUp } from "lucide-react";
+import Papa from "papaparse";
 import { useEffect, useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
 
@@ -22,191 +23,345 @@ ChartJS.register(
   Tooltip
 );
 
-type TimeRange = "5D" | "1M" | "6M" | "YTD" | "12M" | "5Y";
+type TimeRange = "1M" | "6M" | "YTD" | "1Y" | "5Y" | "10Y";
 
 interface StockData {
   date: string;
   price: number;
 }
 
-const generateStockData = (range: TimeRange): StockData[] => {
-  const data: StockData[] = [];
-  const now = new Date();
-  let basePrice = 3186.63;
+interface GoldPriceData {
+  yearlyData: { [key: string]: number[] };
+  sixYearData: { year: string; price: number }[];
+  tenYearData: { year: string; price: number }[];
+  timestamp?: number;
+}
 
-  switch (range) {
-    case "5D": {
-      for (let i = 0; i < 5; i++) {
-        const d = new Date(now);
-        d.setDate(d.getDate() - (4 - i));
-
-        const volatility = 0.02;
-        const trend = 0.0005;
-        const randomChange = (Math.random() - 0.5) * volatility;
-        basePrice = basePrice * (1 + trend + randomChange);
-
-        data.push({
-          date: d.toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-          }),
-          price: Number(basePrice.toFixed(2)),
-        });
-      }
-      break;
-    }
-    case "1M": {
-      for (let i = 0; i < 30; i++) {
-        const d = new Date(now);
-        d.setDate(d.getDate() - (29 - i));
-
-        const volatility = 0.015;
-        const trend = 0.0003;
-        const randomChange = (Math.random() - 0.5) * volatility;
-        basePrice = basePrice * (1 + trend + randomChange);
-
-        data.push({
-          date:
-            i % 5 === 0
-              ? d.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                })
-              : "",
-          price: Number(basePrice.toFixed(2)),
-        });
-      }
-      break;
-    }
-    case "6M": {
-      const months: string[] = [];
-      for (let i = 5; i >= 0; i--) {
-        const d = new Date(now);
-        d.setMonth(d.getMonth() - i);
-        months.push(
-          d.toLocaleDateString("en-US", { month: "short", day: "numeric" })
-        );
-      }
-
-      for (let i = 0; i < 180; i++) {
-        const monthIndex = Math.floor(i / 30);
-
-        const volatility = 0.015;
-        const trend = 0.0003;
-        const randomChange = (Math.random() - 0.5) * volatility;
-        basePrice = basePrice * (1 + trend + randomChange);
-
-        data.push({
-          date: i % 30 === 0 ? months[monthIndex] : "",
-          price: Number(basePrice.toFixed(2)),
-        });
-      }
-      break;
-    }
-    case "YTD": {
-      const startOfYear = new Date(now.getFullYear(), 0, 1);
-      const daysSinceStart = Math.floor(
-        (now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
-      );
-
-      const months: string[] = [];
-      for (let i = 0; i <= now.getMonth(); i++) {
-        const d = new Date(now.getFullYear(), i, 1);
-        months.push(
-          d.toLocaleDateString("en-US", { month: "short", day: "numeric" })
-        );
-      }
-
-      const pointsPerMonth = Math.floor(daysSinceStart / (now.getMonth() + 1));
-      for (let i = 0; i < daysSinceStart; i++) {
-        const monthIndex = Math.floor(i / (pointsPerMonth || 1));
-
-        const volatility = 0.015;
-        const trend = 0.0003;
-        const randomChange = (Math.random() - 0.5) * volatility;
-        basePrice = basePrice * (1 + trend + randomChange);
-
-        data.push({
-          date:
-            i % (pointsPerMonth || 1) === 0 && monthIndex < months.length
-              ? months[monthIndex]
-              : "",
-          price: Number(basePrice.toFixed(2)),
-        });
-      }
-      break;
-    }
-    case "12M": {
-      const months: string[] = [];
-      for (let i = 11; i >= 0; i--) {
-        const d = new Date(now);
-        d.setMonth(d.getMonth() - i);
-        months.push(d.toLocaleDateString("en-US", { month: "short" }));
-      }
-
-      for (let i = 0; i < 360; i++) {
-        const monthIndex = Math.floor(i / 30);
-
-        const volatility = 0.015;
-        const trend = 0.0003;
-        const randomChange = (Math.random() - 0.5) * volatility;
-        basePrice = basePrice * (1 + trend + randomChange);
-
-        data.push({
-          date: i % 30 === 0 ? months[monthIndex] : "",
-          price: Number(basePrice.toFixed(2)),
-        });
-      }
-      break;
-    }
-    case "5Y": {
-      const years: string[] = [];
-      for (let i = 4; i >= 0; i--) {
-        const year = now.getFullYear() - i;
-        years.push(year.toString());
-      }
-
-      for (let i = 0; i < 1825; i++) {
-        const yearIndex = Math.floor(i / 365);
-
-        const volatility = 0.015;
-        const trend = 0.0003;
-        const randomChange = (Math.random() - 0.5) * volatility;
-        basePrice = basePrice * (1 + trend + randomChange);
-
-        data.push({
-          date: i % 365 === 0 ? years[yearIndex] : "",
-          price: Number(basePrice.toFixed(2)),
-        });
-      }
-      break;
-    }
-  }
-
-  return data;
+// Fallback data
+const FALLBACK_DATA: GoldPriceData = {
+  yearlyData: {
+    "2025": [142741.72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "2024": [
+      112402.4, 110653.4, 114034.8, 119596.62, 119503.34, 118314.02, 120039.7,
+      127898.54, 138660.72, 143476.3, 143476.3, 140537.98,
+    ],
+    "2023": [
+      93428.64, 93428.64, 97627.68, 99144.0, 98410.4, 98410.4, 100742.4,
+      101208.8, 101208.8, 102841.2, 109867.2, 111003.2,
+    ],
+  },
+  sixYearData: [
+    { year: "2019", price: 59186.16 },
+    { year: "2020", price: 76341.0 },
+    { year: "2021", price: 74300.0 },
+    { year: "2022", price: 91912.0 },
+    { year: "2023", price: 111003.2 },
+    { year: "2024", price: 143476.3 },
+    { year: "2025", price: 142741.72 },
+  ],
+  tenYearData: [
+    { year: "2014", price: 48400.66 },
+    { year: "2015", price: 44521.0 },
+    { year: "2016", price: 47118.06 },
+    { year: "2017", price: 50155.0 },
+    { year: "2018", price: 52248.46 },
+    { year: "2019", price: 59186.16 },
+    { year: "2020", price: 76341.0 },
+    { year: "2021", price: 74300.0 },
+    { year: "2022", price: 91912.0 },
+    { year: "2023", price: 111003.2 },
+    { year: "2024", price: 143476.3 },
+    { year: "2025", price: 142741.72 },
+  ],
 };
+
+const CACHE_KEY = "goldPriceData";
+const CACHE_DURATION = 60 * 1000; // 1 minute in milliseconds
+
+const SPREADSHEET_ID = "17l7gUNr1QBWjNxufOTS5A9zDOCw1qQb_s6BWiaieV5E";
+const YearlySheetGID = "134202101";
+const SixYearSheetGID = "1063350062";
+const TenYearSheetGID = "653645493";
 
 export default function StockChart() {
   const [selectedRange, setSelectedRange] = useState<TimeRange>("YTD");
   const [stockData, setStockData] = useState<StockData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [chartData, setChartData] = useState<GoldPriceData>(FALLBACK_DATA);
   const chartRef = useRef<ChartJS<"line">>(null);
 
+  const checkCache = (): GoldPriceData | null => {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (!cached) return null;
+
+    const parsedCache = JSON.parse(cached);
+    const now = Date.now();
+
+    if (now - parsedCache.timestamp < CACHE_DURATION) {
+      return parsedCache;
+    }
+
+    localStorage.removeItem(CACHE_KEY);
+    return null;
+  };
+
+  const parseYearlyData = (yearlyResult: Papa.ParseResult<string[]>) => {
+    const yearlyData: { [key: string]: number[] } = {};
+    let currentYear = "";
+
+    yearlyResult.data.forEach((row: string[]) => {
+      if (row[0].match(/^20\d{2}$/)) {
+        currentYear = row[0];
+        if (!yearlyData[currentYear]) {
+          yearlyData[currentYear] = Array(12).fill(0);
+        }
+      } else if (
+        row[0].match(
+          /^(January|February|March|April|May|June|July|August|September|October|November|December)$/
+        )
+      ) {
+        const monthIndex = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ].indexOf(row[0]);
+
+        if (monthIndex !== -1 && currentYear && row[1]) {
+          const price = parseFloat(row[1].replace(/[\s,]/g, ""));
+          yearlyData[currentYear][monthIndex] = price;
+        }
+      }
+    });
+    return yearlyData;
+  };
+
   useEffect(() => {
-    setStockData(generateStockData(selectedRange));
-  }, [selectedRange]);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
 
-  const currentPrice = 3372.43;
-  const yearChange = 185.8;
-  const yearChangePercent = 5.83;
+        // Check cache first
+        const cachedData = checkCache();
+        if (cachedData) {
+          setChartData(cachedData);
+          setLoading(false);
+          return;
+        }
 
-  const ranges: TimeRange[] = ["5D", "1M", "6M", "YTD", "12M", "5Y"];
+        const yearlyDataUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&gid=${YearlySheetGID}#gid=${YearlySheetGID}`;
+        const sixYearDataUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&gid=${SixYearSheetGID}#gid=${SixYearSheetGID}`;
+        const tenYearDataUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&gid=${TenYearSheetGID}#gid=${TenYearSheetGID}`;
+
+        const [yearlyResponse, sixYearResponse, tenYearResponse] =
+          await Promise.all([
+            fetch(yearlyDataUrl),
+            fetch(sixYearDataUrl),
+            fetch(tenYearDataUrl),
+          ]);
+
+        if (!yearlyResponse.ok || !sixYearResponse.ok || !tenYearResponse.ok) {
+          throw new Error("Failed to fetch data from spreadsheet");
+        }
+
+        const [yearlyCSV, sixYearCSV, tenYearCSV] = await Promise.all([
+          yearlyResponse.text(),
+          sixYearResponse.text(),
+          tenYearResponse.text(),
+        ]);
+
+        const newData: GoldPriceData = {
+          yearlyData: {},
+          sixYearData: [],
+          tenYearData: [],
+          timestamp: Date.now(),
+        };
+
+        // Parse yearly data
+        Papa.parse(yearlyCSV, {
+          header: false,
+          complete: (yearlyResult) => {
+            newData.yearlyData = parseYearlyData(yearlyResult);
+
+            // Parse six-year data
+            Papa.parse(sixYearCSV, {
+              header: false,
+              complete: (sixYearResult) => {
+                const sixYearData = sixYearResult.data
+                  .filter((value: unknown) =>
+                    (value as string[])[0]?.match(/^20\d{2}$/)
+                  )
+                  .map((value: unknown) => {
+                    const row = value as string[];
+                    return {
+                      year: row[0],
+                      price: parseFloat(row[1]?.replace(/[\s,]/g, "") || "0"),
+                    };
+                  });
+                newData.sixYearData = sixYearData;
+
+                // Parse ten-year data
+                Papa.parse(tenYearCSV, {
+                  header: false,
+                  complete: (tenYearResult) => {
+                    const tenYearData = tenYearResult.data
+                      .filter((value: unknown) =>
+                        (value as string[])[0]?.match(/^20\d{2}$/)
+                      )
+                      .map((value: unknown) => {
+                        const row = value as string[];
+                        return {
+                          year: row[0],
+                          price: parseFloat(
+                            row[1]?.replace(/[\s,]/g, "") || "0"
+                          ),
+                        };
+                      });
+                    newData.tenYearData = tenYearData;
+
+                    // Save to cache and update state
+                    localStorage.setItem(CACHE_KEY, JSON.stringify(newData));
+                    setChartData(newData);
+                    setLoading(false);
+                  },
+                });
+              },
+            });
+          },
+        });
+      } catch (e) {
+        console.error("Error fetching data:", e);
+        setChartData(FALLBACK_DATA);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (!chartData) return;
+    
+    const transformedData = transformDataForRange(selectedRange, chartData);
+    setStockData(transformedData);
+  }, [selectedRange, chartData]);
+
+  const transformDataForRange = (
+    range: TimeRange,
+    data: GoldPriceData
+  ): StockData[] => {
+    const result: StockData[] = [];
+    const now = new Date();
+    const currentYear = now.getFullYear();
+
+    switch (range) {
+      case "1M": {
+        // Get last month's data from current year
+        const currentMonth = now.getMonth();
+        const yearData = data.yearlyData[currentYear.toString()] || [];
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        
+        if (yearData[currentMonth]) {
+          result.push({
+            date: monthNames[currentMonth],
+            price: yearData[currentMonth],
+          });
+        }
+        break;
+      }
+      case "6M": {
+        // Get last 6 months
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const currentMonth = now.getMonth();
+        const yearData = data.yearlyData[currentYear.toString()] || [];
+        
+        for (let i = 5; i >= 0; i--) {
+          const monthIndex = currentMonth - i;
+          if (monthIndex >= 0 && yearData[monthIndex]) {
+            result.push({
+              date: monthNames[monthIndex],
+              price: yearData[monthIndex],
+            });
+          }
+        }
+        break;
+      }
+      case "YTD": {
+        // Year to date
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const currentMonth = now.getMonth();
+        const yearData = data.yearlyData[currentYear.toString()] || [];
+        
+        for (let i = 0; i <= currentMonth; i++) {
+          if (yearData[i]) {
+            result.push({
+              date: monthNames[i],
+              price: yearData[i],
+            });
+          }
+        }
+        break;
+      }
+      case "1Y": {
+        // Full current year
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const yearData = data.yearlyData[currentYear.toString()] || [];
+        
+        yearData.forEach((price, index) => {
+          if (price > 0) {
+            result.push({
+              date: monthNames[index],
+              price: price,
+            });
+          }
+        });
+        break;
+      }
+      case "5Y": {
+        // Last 5 years
+        data.sixYearData.slice(-5).forEach((item) => {
+          result.push({
+            date: item.year,
+            price: item.price,
+          });
+        });
+        break;
+      }
+      case "10Y": {
+        // Last 10 years
+        data.tenYearData.forEach((item) => {
+          result.push({
+            date: item.year,
+            price: item.price,
+          });
+        });
+        break;
+      }
+    }
+
+    return result;
+  };
+
+  const currentPrice = stockData.length > 0 ? stockData[stockData.length - 1].price : 0;
+  const firstPrice = stockData.length > 0 ? stockData[0].price : 0;
+  const yearChange = currentPrice - firstPrice;
+  const yearChangePercent = firstPrice > 0 ? (yearChange / firstPrice) * 100 : 0;
+
+  const ranges: TimeRange[] = ["1M", "6M", "YTD", "1Y", "5Y", "10Y"];
 
   const prices = stockData.map((d) => d.price);
   const minPrice = Math.min(...prices);
   const maxPrice = Math.max(...prices);
-  // const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
 
-  const chartData = {
+  const chartDataConfig = {
     labels: stockData.map((d) => d.date),
     datasets: [
       {
@@ -262,8 +417,8 @@ export default function StockChart() {
         },
       },
       y: {
-        min: Math.floor(minPrice),
-        max: Math.ceil(maxPrice),
+        min: Math.floor(minPrice * 0.95),
+        max: Math.ceil(maxPrice * 1.05),
         grid: {
           color: "#e5e7eb",
           lineWidth: 1,
@@ -280,6 +435,14 @@ export default function StockChart() {
     },
   };
 
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen bg-transparent p-8 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full min-h-screen bg-transparent p-8">
       <div className="max-w-7xl mx-auto">
@@ -290,16 +453,16 @@ export default function StockChart() {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
-              <span className="text-3xl text-white ml-2">USD</span>
+              <span className="text-3xl text-white ml-2">BDT</span>
             </h1>
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-xl text-green-600 font-normal">
-                +{yearChange.toFixed(2)} ({yearChangePercent}%)
+              <span className={`text-xl font-normal ${yearChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {yearChange >= 0 ? '+' : ''}{yearChange.toFixed(2)} ({yearChangePercent.toFixed(2)}%)
               </span>
-              <TrendingUp className="text-green-600" size={20} />
-              <span className="text-white">year to date</span>
+              <TrendingUp className={yearChange >= 0 ? 'text-green-600' : 'text-red-600'} size={20} />
+              <span className="text-white">{selectedRange === 'YTD' ? 'year to date' : selectedRange}</span>
             </div>
-            <p className="text-white text-sm">Closed: 30 Oct, 5:59 am GMT+6</p>
+            <p className="text-white text-sm">Closed: {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
           </div>
         </div>
 
@@ -334,7 +497,7 @@ export default function StockChart() {
           </div>
 
           <div className="h-[500px]">
-            <Line ref={chartRef} data={chartData} options={options} />
+            <Line ref={chartRef} data={chartDataConfig} options={options} />
           </div>
         </div>
       </div>
