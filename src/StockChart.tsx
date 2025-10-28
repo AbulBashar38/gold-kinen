@@ -249,7 +249,7 @@ export default function StockChart() {
 
   useEffect(() => {
     if (!chartData) return;
-    
+
     const transformedData = transformDataForRange(selectedRange, chartData);
     setStockData(transformedData);
   }, [selectedRange, chartData]);
@@ -267,8 +267,21 @@ export default function StockChart() {
         // Get last month's data from current year
         const currentMonth = now.getMonth();
         const yearData = data.yearlyData[currentYear.toString()] || [];
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        
+        const monthNames = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
+
         if (yearData[currentMonth]) {
           result.push({
             date: monthNames[currentMonth],
@@ -279,10 +292,23 @@ export default function StockChart() {
       }
       case "6M": {
         // Get last 6 months
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const monthNames = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
         const currentMonth = now.getMonth();
         const yearData = data.yearlyData[currentYear.toString()] || [];
-        
+
         for (let i = 5; i >= 0; i--) {
           const monthIndex = currentMonth - i;
           if (monthIndex >= 0 && yearData[monthIndex]) {
@@ -296,10 +322,23 @@ export default function StockChart() {
       }
       case "YTD": {
         // Year to date
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const monthNames = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
         const currentMonth = now.getMonth();
         const yearData = data.yearlyData[currentYear.toString()] || [];
-        
+
         for (let i = 0; i <= currentMonth; i++) {
           if (yearData[i]) {
             result.push({
@@ -312,9 +351,22 @@ export default function StockChart() {
       }
       case "1Y": {
         // Full current year
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const monthNames = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
         const yearData = data.yearlyData[currentYear.toString()] || [];
-        
+
         yearData.forEach((price, index) => {
           if (price > 0) {
             result.push({
@@ -350,10 +402,12 @@ export default function StockChart() {
     return result;
   };
 
-  const currentPrice = stockData.length > 0 ? stockData[stockData.length - 1].price : 0;
+  const currentPrice =
+    stockData.length > 0 ? stockData[stockData.length - 1].price : 0;
   const firstPrice = stockData.length > 0 ? stockData[0].price : 0;
   const yearChange = currentPrice - firstPrice;
-  const yearChangePercent = firstPrice > 0 ? (yearChange / firstPrice) * 100 : 0;
+  const yearChangePercent =
+    firstPrice > 0 ? (yearChange / firstPrice) * 100 : 0;
 
   const ranges: TimeRange[] = ["1M", "6M", "YTD", "1Y", "5Y", "10Y"];
 
@@ -456,13 +510,32 @@ export default function StockChart() {
               <span className="text-3xl text-white ml-2">BDT</span>
             </h1>
             <div className="flex items-center gap-2 mb-2">
-              <span className={`text-xl font-normal ${yearChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {yearChange >= 0 ? '+' : ''}{yearChange.toFixed(2)} ({yearChangePercent.toFixed(2)}%)
+              <span
+                className={`text-xl font-normal ${
+                  yearChange >= 0 ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {yearChange >= 0 ? "+" : ""}
+                {yearChange.toFixed(2)} ({yearChangePercent.toFixed(2)}%)
               </span>
-              <TrendingUp className={yearChange >= 0 ? 'text-green-600' : 'text-red-600'} size={20} />
-              <span className="text-white">{selectedRange === 'YTD' ? 'year to date' : selectedRange}</span>
+              <TrendingUp
+                className={yearChange >= 0 ? "text-green-600" : "text-red-600"}
+                size={20}
+              />
+              <span className="text-white">
+                {selectedRange === "YTD" ? "year to date" : selectedRange}
+              </span>
             </div>
-            <p className="text-white text-sm">Closed: {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+            <p className="text-white text-sm">
+              Closed:{" "}
+              {new Date().toLocaleDateString("en-US", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </p>
           </div>
         </div>
 
