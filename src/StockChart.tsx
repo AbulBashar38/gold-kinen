@@ -9,7 +9,6 @@ import {
   ScriptableContext,
   Tooltip,
 } from "chart.js";
-import { TrendingUp } from "lucide-react";
 import Papa from "papaparse";
 import { useEffect, useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
@@ -23,7 +22,7 @@ ChartJS.register(
   Tooltip
 );
 
-type TimeRange = "1M" | "6M" | "YTD" | "1Y" | "5Y" | "10Y";
+type TimeRange = "Yearly" | "6Years" | "10Years";
 
 interface StockData {
   date: string;
@@ -84,7 +83,13 @@ const SixYearSheetGID = "1063350062";
 const TenYearSheetGID = "653645493";
 
 export default function StockChart() {
-  const [selectedRange, setSelectedRange] = useState<TimeRange>("YTD");
+  // Set to true for transparent background, false for gradient background
+  const transparent = true;
+
+  const [selectedRange, setSelectedRange] = useState<TimeRange>("Yearly");
+  const [selectedYear, setSelectedYear] = useState<string>(
+    new Date().getFullYear().toString()
+  );
   const [stockData, setStockData] = useState<StockData[]>([]);
   const [loading, setLoading] = useState(true);
   const [chartData, setChartData] = useState<GoldPriceData>(FALLBACK_DATA);
@@ -229,6 +234,7 @@ export default function StockChart() {
 
                     // Save to cache and update state
                     localStorage.setItem(CACHE_KEY, JSON.stringify(newData));
+
                     setChartData(newData);
                     setLoading(false);
                   },
@@ -250,23 +256,24 @@ export default function StockChart() {
   useEffect(() => {
     if (!chartData) return;
 
-    const transformedData = transformDataForRange(selectedRange, chartData);
+    const transformedData = transformDataForRange(
+      selectedRange,
+      selectedYear,
+      chartData
+    );
     setStockData(transformedData);
-  }, [selectedRange, chartData]);
+  }, [selectedRange, selectedYear, chartData]);
 
   const transformDataForRange = (
     range: TimeRange,
+    year: string,
     data: GoldPriceData
   ): StockData[] => {
     const result: StockData[] = [];
-    const now = new Date();
-    const currentYear = now.getFullYear();
 
     switch (range) {
-      case "1M": {
-        // Get last month's data from current year
-        const currentMonth = now.getMonth();
-        const yearData = data.yearlyData[currentYear.toString()] || [];
+      case "Yearly": {
+        // Show monthly data for selected year
         const monthNames = [
           "Jan",
           "Feb",
@@ -281,91 +288,7 @@ export default function StockChart() {
           "Nov",
           "Dec",
         ];
-
-        if (yearData[currentMonth]) {
-          result.push({
-            date: monthNames[currentMonth],
-            price: yearData[currentMonth],
-          });
-        }
-        break;
-      }
-      case "6M": {
-        // Get last 6 months
-        const monthNames = [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec",
-        ];
-        const currentMonth = now.getMonth();
-        const yearData = data.yearlyData[currentYear.toString()] || [];
-
-        for (let i = 5; i >= 0; i--) {
-          const monthIndex = currentMonth - i;
-          if (monthIndex >= 0 && yearData[monthIndex]) {
-            result.push({
-              date: monthNames[monthIndex],
-              price: yearData[monthIndex],
-            });
-          }
-        }
-        break;
-      }
-      case "YTD": {
-        // Year to date
-        const monthNames = [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec",
-        ];
-        const currentMonth = now.getMonth();
-        const yearData = data.yearlyData[currentYear.toString()] || [];
-
-        for (let i = 0; i <= currentMonth; i++) {
-          if (yearData[i]) {
-            result.push({
-              date: monthNames[i],
-              price: yearData[i],
-            });
-          }
-        }
-        break;
-      }
-      case "1Y": {
-        // Full current year
-        const monthNames = [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec",
-        ];
-        const yearData = data.yearlyData[currentYear.toString()] || [];
+        const yearData = data.yearlyData[year] || [];
 
         yearData.forEach((price, index) => {
           if (price > 0) {
@@ -377,9 +300,9 @@ export default function StockChart() {
         });
         break;
       }
-      case "5Y": {
-        // Last 5 years
-        data.sixYearData.slice(-5).forEach((item) => {
+      case "6Years": {
+        // Last 6 years
+        data.sixYearData.forEach((item) => {
           result.push({
             date: item.year,
             price: item.price,
@@ -387,7 +310,7 @@ export default function StockChart() {
         });
         break;
       }
-      case "10Y": {
+      case "10Years": {
         // Last 10 years
         data.tenYearData.forEach((item) => {
           result.push({
@@ -404,12 +327,16 @@ export default function StockChart() {
 
   const currentPrice =
     stockData.length > 0 ? stockData[stockData.length - 1].price : 0;
-  const firstPrice = stockData.length > 0 ? stockData[0].price : 0;
-  const yearChange = currentPrice - firstPrice;
-  const yearChangePercent =
-    firstPrice > 0 ? (yearChange / firstPrice) * 100 : 0;
 
-  const ranges: TimeRange[] = ["1M", "6M", "YTD", "1Y", "5Y", "10Y"];
+  const ranges: TimeRange[] = ["Yearly", "6Years", "10Years"];
+
+  // Get last 3 years for yearly tab
+  const currentYear = new Date().getFullYear();
+  const availableYears = [
+    (currentYear - 2).toString(),
+    (currentYear - 1).toString(),
+    currentYear.toString(),
+  ];
 
   const prices = stockData.map((d) => d.price);
   const minPrice = Math.min(...prices);
@@ -449,7 +376,28 @@ export default function StockChart() {
         display: false,
       },
       tooltip: {
-        enabled: false,
+        enabled: true,
+        backgroundColor: "rgba(255, 255, 255, 0.95)",
+        titleColor: "#1f2937",
+        bodyColor: "#1f2937",
+        borderColor: "#D7A836",
+        borderWidth: 1,
+        padding: 12,
+        displayColors: false,
+        callbacks: {
+          title: function (context) {
+            return context[0].label;
+          },
+          label: function (context) {
+            return (
+              "৳ " +
+              context.parsed.y.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })
+            );
+          },
+        },
       },
     },
     scales: {
@@ -483,7 +431,14 @@ export default function StockChart() {
           dash: [3, 3],
         },
         ticks: {
-          display: false,
+          display: true,
+          color: "#D1E1FF",
+          font: {
+            size: 11,
+          },
+          callback: function (value) {
+            return "৳ " + value.toLocaleString();
+          },
         },
       },
     },
@@ -491,14 +446,26 @@ export default function StockChart() {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen bg-transparent p-8 flex items-center justify-center">
+      <div
+        className={`w-full min-h-screen ${
+          transparent
+            ? "bg-transparent"
+            : "bg-gradient-to-br from-[#4786FF] to-[#2B5099]"
+        } p-8 flex items-center justify-center`}
+      >
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
       </div>
     );
   }
 
   return (
-    <div className="w-full min-h-screen bg-transparent p-8">
+    <div
+      className={`w-full min-h-screen ${
+        transparent
+          ? "bg-transparent"
+          : "bg-gradient-to-br from-[#4786FF] to-[#2B5099]"
+      } p-8`}
+    >
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-start mb-8">
           <div>
@@ -509,7 +476,7 @@ export default function StockChart() {
               })}
               <span className="text-3xl text-white ml-2">BDT</span>
             </h1>
-            <div className="flex items-center gap-2 mb-2">
+            {/* <div className="flex items-center gap-2 mb-2">
               <span
                 className={`text-xl font-normal ${
                   yearChange >= 0 ? "text-green-600" : "text-red-600"
@@ -535,28 +502,60 @@ export default function StockChart() {
                 hour: "2-digit",
                 minute: "2-digit",
               })}
-            </p>
+            </p> */}
           </div>
         </div>
 
-        <div className="flex justify-end gap-4 mb-6">
-          {ranges.map((range) => (
-            <button
-              key={range}
-              onClick={() => setSelectedRange(range)}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
-                selectedRange === range
-                  ? "text-blue-600 bg-blue-50 rounded-md"
-                  : "text-white hover:text-gray-300"
-              }`}
-            >
-              {range}
-            </button>
-          ))}
+        <div className="flex flex-col items-end gap-4 mb-6">
+          {/* Main Range Tabs */}
+          <div className="flex gap-4">
+            {ranges.map((range) => (
+              <button
+                key={range}
+                onClick={() => {
+                  setSelectedRange(range);
+                  if (range !== "Yearly") {
+                    // Reset to current year when switching away from Yearly
+                    setSelectedYear(currentYear.toString());
+                  }
+                }}
+                className={`px-4 py-2 text-sm font-medium transition-colors ${
+                  selectedRange === range
+                    ? "text-blue-600 bg-blue-50 rounded-md"
+                    : "text-white hover:text-gray-300"
+                }`}
+              >
+                {range === "Yearly"
+                  ? "Yearly"
+                  : range === "6Years"
+                  ? "6 Years"
+                  : "10 Years"}
+              </button>
+            ))}
+          </div>
+
+          {/* Year Selection Tabs (only shown when Yearly is selected) */}
+          {selectedRange === "Yearly" && (
+            <div className="flex gap-3">
+              {availableYears.map((year) => (
+                <button
+                  key={year}
+                  onClick={() => setSelectedYear(year)}
+                  className={`px-3 py-1.5 text-sm font-medium transition-colors rounded-md ${
+                    selectedYear === year
+                      ? "bg-white text-blue-600"
+                      : "bg-blue-400 bg-opacity-30 text-white hover:bg-opacity-50"
+                  }`}
+                >
+                  {year}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="relative">
-          <div className="absolute right-8 top-2 text-xs text-white">
+          {/* <div className="absolute right-8 top-2 text-xs text-white">
             {maxPrice.toLocaleString("en-US", { maximumFractionDigits: 1 })}
           </div>
           <div className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-white">
@@ -567,7 +566,7 @@ export default function StockChart() {
             style={{ color: "#D1E1FF" }}
           >
             {minPrice.toLocaleString("en-US", { maximumFractionDigits: 1 })}
-          </div>
+          </div> */}
 
           <div className="h-[500px]">
             <Line ref={chartRef} data={chartDataConfig} options={options} />
