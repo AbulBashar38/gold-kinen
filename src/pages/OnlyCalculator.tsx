@@ -43,20 +43,20 @@ const OnlyCalculator = () => {
       <div className="flex justify-center mb-6 sm:mb-8 gap-2 sm:gap-3">
         <button
           onClick={() => setActiveTab("gram")}
-          className={`px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-full font-bold text-sm sm:text-base md:text-lg transition-all duration-300 transform ${
+          className={`px-2 py-1.5 md:px-3 md:py-2 lg:px-4 lg:py-2 text-xs md:text-sm font-medium transition-colors rounded-full ${
             activeTab === "gram"
-              ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-white shadow-md shadow-yellow-200 scale-105"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md"
+              ? "text-blue-600 bg-blue-50"
+              : "text-white hover:text-gray-300"
           }`}
         >
           Gram
         </button>
         <button
           onClick={() => setActiveTab("bhori")}
-          className={`px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-full font-bold text-sm sm:text-base md:text-lg transition-all duration-300 transform ${
+          className={`px-2 py-1.5 md:px-3 md:py-2 lg:px-4 lg:py-2 text-xs md:text-sm font-medium transition-colors rounded-full ${
             activeTab === "bhori"
-              ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-white shadow-md shadow-yellow-200 scale-105"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md"
+              ? "text-blue-600 bg-blue-50"
+              : "text-white hover:text-gray-300"
           }`}
         >
           Bhori
@@ -74,6 +74,31 @@ const OnlyCalculator = () => {
         <p className="text-xs sm:text-sm text-gray-300">
           22k Market price today
         </p>
+      </div>
+
+      {/* Recommendation */}
+      <div className="mb-6 sm:mb-8">
+        <label className="block text-xs sm:text-sm font-medium text-white mb-2 sm:mb-3">
+          Recommendation
+        </label>
+        <div className="grid grid-cols-4 gap-2">
+          {[500, 1000, 5000, 6000].map((amount) => (
+            <button
+              key={amount}
+              onClick={() => {
+                setPrice(amount.toString());
+                setLastChanged("price");
+              }}
+              className={`px-2 py-1.5 md:px-3 md:py-2 text-xs md:text-sm font-medium transition-colors rounded-full ${
+                price === amount.toString()
+                  ? "text-blue-600 bg-blue-50"
+                  : "text-white bg-blue-400 bg-opacity-30 hover:bg-opacity-50"
+              }`}
+            >
+              ${amount}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Inputs */}
