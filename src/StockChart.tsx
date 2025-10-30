@@ -463,7 +463,7 @@ export default function StockChart() {
 
   return (
     <div
-      className={`box-border w-full h-full aspect-[3/2] ${
+      className={`box-border w-full aspect-[3/2] ${
         transparent
           ? "bg-transparent"
           : "bg-gradient-to-br from-[#4786FF] to-[#2B5099]"
@@ -518,7 +518,7 @@ export default function StockChart() {
           )}
         </div>
 
-        <div className="w-full h-full aspect-[3/2]">
+        <div className="w-full aspect-[3/2]">
           <Line ref={chartRef} data={chartDataConfig} options={options} />
         </div>
       </div>
