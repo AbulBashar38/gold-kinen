@@ -463,13 +463,13 @@ export default function StockChart() {
 
   return (
     <div
-      className={`w-full min-h-screen ${
+      className={`w-full h-full aspect-[3/2] ${
         transparent
           ? "bg-transparent"
           : "bg-gradient-to-br from-[#4786FF] to-[#2B5099]"
       }`}
     >
-      <div className="w-full max-w-7xl mx-auto">
+      <div className="w-full h-full">
         <div className="flex flex-col items-end gap-2 mb-2 md:mb-3">
           {/* Main Range Tabs */}
           <div className="flex gap-2 md:gap-3 lg:gap-4">
@@ -518,23 +518,8 @@ export default function StockChart() {
           )}
         </div>
 
-        <div className="relative">
-          {/* <div className="absolute right-8 top-2 text-xs text-white">
-            {maxPrice.toLocaleString("en-US", { maximumFractionDigits: 1 })}
-          </div>
-          <div className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-white">
-            AVG
-          </div>
-          <div
-            className="absolute right-8 bottom-12 text-xs text-gray-400"
-            style={{ color: "#D1E1FF" }}
-          >
-            {minPrice.toLocaleString("en-US", { maximumFractionDigits: 1 })}
-          </div> */}
-
-          <div className="w-full aspect-[3/2]">
-            <Line ref={chartRef} data={chartDataConfig} options={options} />
-          </div>
+        <div className="w-full h-full ">
+          <Line ref={chartRef} data={chartDataConfig} options={options} />
         </div>
       </div>
     </div>
