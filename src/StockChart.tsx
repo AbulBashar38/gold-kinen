@@ -463,7 +463,7 @@ export default function StockChart() {
 
   return (
     <div
-      className={`box-border w-full aspect-[3/2] ${
+      className={`box-border w-full h-full ${
         transparent
           ? "bg-transparent"
           : "bg-gradient-to-br from-[#4786FF] to-[#2B5099]"
