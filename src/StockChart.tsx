@@ -469,7 +469,7 @@ export default function StockChart() {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-start mb-8">
           <div>
-            <h1 className="text-6xl font-light text-white mb-3">
+            <h1 className="text-2xl font-light text-white mb-3">
               {currentPrice.toLocaleString("en-US", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
