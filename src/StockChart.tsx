@@ -507,7 +507,7 @@ export default function StockChart() {
           </div>
         </div>
 
-        <div className="flex flex-col items-end gap-4 mb-6">
+        <div className="flex flex-col items-end gap-4 mb-3">
           {/* Main Range Tabs */}
           <div className="flex gap-4">
             {ranges.map((range) => (
@@ -569,7 +569,7 @@ export default function StockChart() {
             {minPrice.toLocaleString("en-US", { maximumFractionDigits: 1 })}
           </div> */}
 
-          <div className="h-[500px]">
+          <div className="h-[300px]">
             <Line ref={chartRef} data={chartDataConfig} options={options} />
           </div>
         </div>
