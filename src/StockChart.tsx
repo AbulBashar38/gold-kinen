@@ -468,7 +468,7 @@ export default function StockChart() {
       } `}
     >
       <div className="w-full">
-        <div className="flex justify-between items-start mb-4">
+        <div className="flex justify-between items-start mb-2">
           <div>
             <h1 className="text-2xl font-light text-white">
               {currentPrice.toLocaleString("en-US", {
@@ -507,7 +507,7 @@ export default function StockChart() {
           </div>
         </div>
 
-        <div className="flex flex-col items-end gap-4 mb-3">
+        <div className="flex flex-col items-end gap-2 mb-2">
           {/* Main Range Tabs */}
           <div className="flex gap-4">
             {ranges.map((range) => (
