@@ -463,14 +463,14 @@ export default function StockChart() {
 
   return (
     <div
-      className={`w-full h-full aspect-[3/2] ${
+      className={`box-border w-full h-full aspect-[3/2] ${
         transparent
           ? "bg-transparent"
           : "bg-gradient-to-br from-[#4786FF] to-[#2B5099]"
       }`}
     >
       <div className="w-full h-full">
-        <div className="flex flex-col items-end gap-2 mb-2 md:mb-3">
+        <div className="flex flex-col items-center gap-2 mb-2 md:mb-3">
           {/* Main Range Tabs */}
           <div className="flex gap-2 md:gap-3 lg:gap-4">
             {ranges.map((range) => (
@@ -518,7 +518,7 @@ export default function StockChart() {
           )}
         </div>
 
-        <div className="w-full h-full ">
+        <div className="w-full h-full aspect-[3/2]">
           <Line ref={chartRef} data={chartDataConfig} options={options} />
         </div>
       </div>
