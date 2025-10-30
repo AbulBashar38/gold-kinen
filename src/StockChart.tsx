@@ -325,8 +325,8 @@ export default function StockChart() {
     return result;
   };
 
-  const currentPrice =
-    stockData.length > 0 ? stockData[stockData.length - 1].price : 0;
+  // const currentPrice =
+  //   stockData.length > 0 ? stockData[stockData.length - 1].price : 0;
 
   const ranges: TimeRange[] = ["Yearly", "6Years", "10Years"];
 
@@ -470,47 +470,6 @@ export default function StockChart() {
       }`}
     >
       <div className="w-full max-w-7xl mx-auto">
-        <div className="flex justify-between items-start mb-2 md:mb-3">
-          <div>
-            <h1 className="text-xl md:text-2xl lg:text-3xl font-light text-white">
-              {currentPrice.toLocaleString("en-US", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-              <span className="text-base md:text-xl lg:text-2xl text-white ml-2">
-                BDT
-              </span>
-            </h1>
-            {/* <div className="flex items-center gap-2 mb-2">
-              <span
-                className={`text-xl font-normal ${
-                  yearChange >= 0 ? "text-green-600" : "text-red-600"
-                }`}
-              >
-                {yearChange >= 0 ? "+" : ""}
-                {yearChange.toFixed(2)} ({yearChangePercent.toFixed(2)}%)
-              </span>
-              <TrendingUp
-                className={yearChange >= 0 ? "text-green-600" : "text-red-600"}
-                size={20}
-              />
-              <span className="text-white">
-                {selectedRange === "YTD" ? "year to date" : selectedRange}
-              </span>
-            </div>
-            <p className="text-white text-sm">
-              Closed:{" "}
-              {new Date().toLocaleDateString("en-US", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </p> */}
-          </div>
-        </div>
-
         <div className="flex flex-col items-end gap-2 mb-2 md:mb-3">
           {/* Main Range Tabs */}
           <div className="flex gap-2 md:gap-3 lg:gap-4">
@@ -573,7 +532,7 @@ export default function StockChart() {
             {minPrice.toLocaleString("en-US", { maximumFractionDigits: 1 })}
           </div> */}
 
-          <div className="h-[230px]">
+          <div className="h-full">
             <Line ref={chartRef} data={chartDataConfig} options={options} />
           </div>
         </div>
