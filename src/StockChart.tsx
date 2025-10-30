@@ -436,6 +436,7 @@ export default function StockChart() {
           font: {
             size: 11,
           },
+          maxTicksLimit: 5,
           callback: function (value) {
             return "৳ " + value.toLocaleString();
           },
