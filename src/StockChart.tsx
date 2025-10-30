@@ -467,7 +467,7 @@ export default function StockChart() {
         transparent
           ? "bg-transparent"
           : "bg-gradient-to-br from-[#4786FF] to-[#2B5099]"
-      } p-4 md:p-6 lg:p-8`}
+      }`}
     >
       <div className="w-full max-w-7xl mx-auto">
         <div className="flex justify-between items-start mb-2 md:mb-3">
