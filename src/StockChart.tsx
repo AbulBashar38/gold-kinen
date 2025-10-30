@@ -467,14 +467,14 @@ export default function StockChart() {
       } `}
     >
       <div className="w-full">
-        <div className="flex justify-between items-start mb-8">
+        <div className="flex justify-between items-start mb-4">
           <div>
             <h1 className="text-2xl font-light text-white mb-3">
               {currentPrice.toLocaleString("en-US", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
-              <span className="text-3xl text-white ml-2">BDT</span>
+              <span className="text-xl text-white ml-2">BDT</span>
             </h1>
             {/* <div className="flex items-center gap-2 mb-2">
               <span
