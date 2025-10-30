@@ -532,7 +532,7 @@ export default function StockChart() {
             {minPrice.toLocaleString("en-US", { maximumFractionDigits: 1 })}
           </div> */}
 
-          <div className="h-full">
+          <div className="w-full aspect-[3/2]">
             <Line ref={chartRef} data={chartDataConfig} options={options} />
           </div>
         </div>
