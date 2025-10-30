@@ -411,9 +411,10 @@ export default function StockChart() {
         ticks: {
           color: "#D1E1FF",
           font: {
-            size: 13,
+            size:
+              window.innerWidth < 640 ? 10 : window.innerWidth < 768 ? 11 : 13,
           },
-          autoSkip: false,
+          autoSkip: true,
           maxRotation: 0,
           minRotation: 0,
         },
@@ -434,9 +435,10 @@ export default function StockChart() {
           display: true,
           color: "#D1E1FF",
           font: {
-            size: 11,
+            size:
+              window.innerWidth < 640 ? 9 : window.innerWidth < 768 ? 10 : 11,
           },
-          maxTicksLimit: 5,
+          maxTicksLimit: window.innerWidth < 640 ? 4 : 5,
           callback: function (value) {
             return "৳ " + value.toLocaleString();
           },
@@ -465,17 +467,19 @@ export default function StockChart() {
         transparent
           ? "bg-transparent"
           : "bg-gradient-to-br from-[#4786FF] to-[#2B5099]"
-      } `}
+      } p-4 md:p-6 lg:p-8`}
     >
-      <div className="w-full">
-        <div className="flex justify-between items-start mb-2">
+      <div className="w-full max-w-7xl mx-auto">
+        <div className="flex justify-between items-start mb-2 md:mb-3">
           <div>
-            <h1 className="text-2xl font-light text-white">
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-light text-white">
               {currentPrice.toLocaleString("en-US", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
-              <span className="text-xl text-white ml-2">BDT</span>
+              <span className="text-base md:text-xl lg:text-2xl text-white ml-2">
+                BDT
+              </span>
             </h1>
             {/* <div className="flex items-center gap-2 mb-2">
               <span
@@ -507,9 +511,9 @@ export default function StockChart() {
           </div>
         </div>
 
-        <div className="flex flex-col items-end gap-2 mb-2">
+        <div className="flex flex-col items-end gap-2 mb-2 md:mb-3">
           {/* Main Range Tabs */}
-          <div className="flex gap-4">
+          <div className="flex gap-2 md:gap-3 lg:gap-4">
             {ranges.map((range) => (
               <button
                 key={range}
@@ -520,9 +524,9 @@ export default function StockChart() {
                     setSelectedYear(currentYear.toString());
                   }
                 }}
-                className={`px-4 py-2 text-sm font-medium transition-colors ${
+                className={`px-2 py-1.5 md:px-3 md:py-2 lg:px-4 lg:py-2 text-xs md:text-sm font-medium transition-colors rounded-full ${
                   selectedRange === range
-                    ? "text-blue-600 bg-blue-50 rounded-md"
+                    ? "text-blue-600 bg-blue-50"
                     : "text-white hover:text-gray-300"
                 }`}
               >
@@ -537,12 +541,12 @@ export default function StockChart() {
 
           {/* Year Selection Tabs (only shown when Yearly is selected) */}
           {selectedRange === "Yearly" && (
-            <div className="flex gap-3">
+            <div className="flex gap-2 md:gap-3">
               {availableYears.map((year) => (
                 <button
                   key={year}
                   onClick={() => setSelectedYear(year)}
-                  className={`px-3 py-1.5 text-sm font-medium transition-colors rounded-md ${
+                  className={`px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm font-medium transition-colors rounded-full ${
                     selectedYear === year
                       ? "bg-white text-blue-600"
                       : "bg-blue-400 bg-opacity-30 text-white hover:bg-opacity-50"
@@ -569,7 +573,7 @@ export default function StockChart() {
             {minPrice.toLocaleString("en-US", { maximumFractionDigits: 1 })}
           </div> */}
 
-          <div className="h-[220px]">
+          <div className="h-[180px] sm:h-[220px] md:h-[280px] lg:h-[320px]">
             <Line ref={chartRef} data={chartDataConfig} options={options} />
           </div>
         </div>
