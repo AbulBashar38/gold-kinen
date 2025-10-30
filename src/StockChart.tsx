@@ -411,8 +411,7 @@ export default function StockChart() {
         ticks: {
           color: "#D1E1FF",
           font: {
-            size:
-              window.innerWidth < 640 ? 14 : window.innerWidth < 768 ? 11 : 13,
+            size: 14,
           },
           autoSkip: true,
           maxRotation: 0,
@@ -435,8 +434,7 @@ export default function StockChart() {
           display: true,
           color: "#D1E1FF",
           font: {
-            size:
-              window.innerWidth < 640 ? 9 : window.innerWidth < 768 ? 10 : 11,
+            size: 14,
           },
           maxTicksLimit: window.innerWidth < 640 ? 4 : 5,
           callback: function (value) {
