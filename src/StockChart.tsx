@@ -569,7 +569,7 @@ export default function StockChart() {
             {minPrice.toLocaleString("en-US", { maximumFractionDigits: 1 })}
           </div> */}
 
-          <div className="h-[250px]">
+          <div className="h-[230px]">
             <Line ref={chartRef} data={chartDataConfig} options={options} />
           </div>
         </div>
