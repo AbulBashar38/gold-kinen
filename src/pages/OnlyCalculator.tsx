@@ -78,7 +78,7 @@ const OnlyCalculator = () => {
         </div>
 
         {/* Inputs */}
-        <div className="flex flex-col sm:flex-row items-end gap-2 sm:gap-4 mb-4">
+        <div className="flex flex-col sm:flex-row items-end gap-2 sm:gap-4 mb-4 px-1">
           <div className="flex-1 w-full">
             <label className="block text-xs sm:text-sm font-medium text-white mb-1 sm:mb-2">
               Quantity
