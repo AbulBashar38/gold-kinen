@@ -39,7 +39,7 @@ const OnlyCalculator = () => {
 
   return (
     <main className="w-full h-full">
-      <div className="bg-transparent p-4 sm:p-6 md:p-8 rounded-lg shadow-lg border-2 border-yellow-300">
+      <div className="bg-transparent">
         {/* Tabs */}
         <div className="flex justify-center mb-6 sm:mb-8 gap-2 sm:gap-3">
           <button
@@ -66,13 +66,13 @@ const OnlyCalculator = () => {
 
         {/* Price Display */}
         <div className="text-center mb-6 sm:mb-8">
-          <p className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-800 mb-1 sm:mb-2 break-words">
+          <p className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2 break-words">
             BDT{" "}
             {activeTab === "bhori"
               ? PRICE_PER_BHORI.toFixed(2) + "/Bhori"
               : PRICE_PER_GRAM.toFixed(2) + "/Gram"}
           </p>
-          <p className="text-xs sm:text-sm text-gray-600">
+          <p className="text-xs sm:text-sm text-gray-300">
             22k Market price today
           </p>
         </div>
@@ -80,7 +80,7 @@ const OnlyCalculator = () => {
         {/* Inputs */}
         <div className="flex flex-col sm:flex-row items-end gap-2 sm:gap-4 mb-4">
           <div className="flex-1 w-full">
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-white mb-1 sm:mb-2">
               Quantity
             </label>
             <input
@@ -93,13 +93,13 @@ const OnlyCalculator = () => {
                   setLastChanged("quantity");
                 }
               }}
-              className="w-full px-2 sm:px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-sm sm:text-base"
+              className="w-full px-2 sm:px-3 py-2 border border-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-sm sm:text-base"
               placeholder={`Enter ${activeTab === "bhori" ? "Bhori" : "Grams"}`}
             />
           </div>
 
           <div className="flex-1 w-full">
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-white mb-1 sm:mb-2">
               Price (BDT)
             </label>
             <input
@@ -112,7 +112,7 @@ const OnlyCalculator = () => {
                   setLastChanged("price");
                 }
               }}
-              className="w-full px-2 sm:px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-sm sm:text-base"
+              className="w-full px-2 sm:px-3 py-2 border border-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-sm sm:text-base"
               placeholder="Enter price"
             />
           </div>
