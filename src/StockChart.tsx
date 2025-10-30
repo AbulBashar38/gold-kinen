@@ -412,7 +412,7 @@ export default function StockChart() {
           color: "#D1E1FF",
           font: {
             size:
-              window.innerWidth < 640 ? 10 : window.innerWidth < 768 ? 11 : 13,
+              window.innerWidth < 640 ? 14 : window.innerWidth < 768 ? 11 : 13,
           },
           autoSkip: true,
           maxRotation: 0,
