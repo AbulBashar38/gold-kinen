@@ -72,7 +72,7 @@ const OnlyCalculator = () => {
   }, []);
 
   return (
-    <main className="w-full h-full bg-blue-800 p-2">
+    <main className="w-full h-full bg-transparent p-2">
       {/* Tabs */}
       <div className="flex justify-center mb-6 sm:mb-8 gap-2 sm:gap-3">
         <button
