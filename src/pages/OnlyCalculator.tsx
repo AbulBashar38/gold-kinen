@@ -8,8 +8,6 @@ const OnlyCalculator = () => {
     "quantity"
   );
 
-  // Dummy prices (can be updated dynamically if needed)
-  const PRICE_PER_GRAM = 18547.0;
   // API test states
   const [marketPrice, setMarketPrice] = useState<string>("");
   const [mpLoading, setMpLoading] = useState<boolean>(false);
@@ -19,9 +17,7 @@ const OnlyCalculator = () => {
 
   // derive price per gram from market API when available, else fallback
   const marketPriceFloat = marketPrice ? parseFloat(marketPrice) : NaN;
-  const pricePerGram = !isNaN(marketPriceFloat)
-    ? marketPriceFloat
-    : PRICE_PER_GRAM;
+  const pricePerGram = !isNaN(marketPriceFloat) ? marketPriceFloat : 0;
   const pricePerBhori = pricePerGram * GRAMS_PER_BHORI;
 
   const currentPricePerUnit =
