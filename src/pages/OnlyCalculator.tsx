@@ -64,7 +64,7 @@ const OnlyCalculator = () => {
 
     fetchMarketPrice();
   }, []);
-
+  console.log({ marketPrice });
   return (
     <main className="w-full h-full bg-transparent p-2">
       {/* Tabs */}
