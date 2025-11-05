@@ -9,11 +9,23 @@ const OnlyCalculator = () => {
   );
 
   // Dummy prices (can be updated dynamically if needed)
-  const PRICE_PER_BHORI = 216260.0;
   const PRICE_PER_GRAM = 18547.0;
+  // API test states
+  const [marketPrice, setMarketPrice] = useState<string>("");
+  const [mpLoading, setMpLoading] = useState<boolean>(false);
+
+  // grams per vori/bhori conversion (approx)
+  const GRAMS_PER_BHORI = 11.66;
+
+  // derive price per gram from market API when available, else fallback
+  const marketPriceFloat = marketPrice ? parseFloat(marketPrice) : NaN;
+  const pricePerGram = !isNaN(marketPriceFloat)
+    ? marketPriceFloat
+    : PRICE_PER_GRAM;
+  const pricePerBhori = pricePerGram * GRAMS_PER_BHORI;
 
   const currentPricePerUnit =
-    activeTab === "bhori" ? PRICE_PER_BHORI : PRICE_PER_GRAM;
+    activeTab === "bhori" ? pricePerBhori : pricePerGram;
 
   useEffect(() => {
     if (lastChanged === "quantity") {
@@ -37,8 +49,30 @@ const OnlyCalculator = () => {
     }
   }, [quantity, price, lastChanged, currentPricePerUnit]);
 
+  // Fetch market price on mount (GET)
+  useEffect(() => {
+    const fetchMarketPrice = async () => {
+      setMpLoading(true);
+      try {
+        const res = await fetch(
+          "https://ygwr7rrpjj.execute-api.ap-southeast-1.amazonaws.com/Stage/market-price"
+        );
+        const json = await res.json();
+        if (json?.success && json?.data) {
+          setMarketPrice(json.data.market_price || "");
+        }
+      } catch (e) {
+        console.error("Failed to fetch market price:", e);
+      } finally {
+        setMpLoading(false);
+      }
+    };
+
+    fetchMarketPrice();
+  }, []);
+
   return (
-    <main className="w-full h-full bg-transparent p-2">
+    <main className="w-full h-full bg-blue-800 p-2">
       {/* Tabs */}
       <div className="flex justify-center mb-6 sm:mb-8 gap-2 sm:gap-3">
         <button
@@ -68,8 +102,8 @@ const OnlyCalculator = () => {
         <p className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2 break-words">
           BDT{" "}
           {activeTab === "bhori"
-            ? PRICE_PER_BHORI.toFixed(2) + "/Bhori"
-            : PRICE_PER_GRAM.toFixed(2) + "/Gram"}
+            ? pricePerBhori.toFixed(2) + "/Bhori"
+            : pricePerGram.toFixed(2) + "/Gram"}
         </p>
         <p className="text-xs sm:text-sm text-gray-300">
           22k Market price today
@@ -102,7 +136,7 @@ const OnlyCalculator = () => {
       </div>
 
       {/* Inputs */}
-      <div className="flex flex-col sm:flex-row items-end gap-2 sm:gap-4 mb-4 ">
+      <div className="flex flex-col sm:flex-row items-end gap-3 sm:gap-4 mb-4 ">
         <div className="flex-1 w-full">
           <label className="block text-xs sm:text-sm font-medium text-white mb-1 sm:mb-2">
             Quantity
@@ -137,7 +171,7 @@ const OnlyCalculator = () => {
               }
             }}
             className="w-full px-2 sm:px-3 py-2 border border-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-sm sm:text-base"
-            placeholder="Enter price"
+            placeholder="Enter value"
           />
         </div>
       </div>

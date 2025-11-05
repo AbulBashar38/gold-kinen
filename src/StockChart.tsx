@@ -498,7 +498,7 @@ export default function StockChart() {
 
           {/* Year Selection Tabs (only shown when Yearly is selected) */}
           {selectedRange === "Yearly" && (
-            <div className="flex gap-2 md:gap-3">
+            <div className="flex gap-2 md:gap-3 mt-2">
               {availableYears.map((year) => (
                 <button
                   key={year}
