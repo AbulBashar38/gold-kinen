@@ -37,7 +37,12 @@ const OnlyCalculator = () => {
       if (price !== "") {
         const priceValue = parseFloat(price);
         if (!isNaN(priceValue)) {
-          setQuantity((priceValue / currentPricePerUnit).toFixed(4));
+          // Avoid division by zero / Infinity when current unit price is 0 or invalid
+          if (!isFinite(currentPricePerUnit) || currentPricePerUnit === 0) {
+            setQuantity("");
+          } else {
+            setQuantity((priceValue / currentPricePerUnit).toFixed(4));
+          }
         }
       } else {
         setQuantity("");
@@ -66,7 +71,7 @@ const OnlyCalculator = () => {
 
     fetchMarketPrice();
   }, []);
-  console.log({ marketPrice });
+  // console.log({ marketPrice });
   return (
     <main className="w-full h-full bg-transparent p-2">
       {/* Tabs */}
