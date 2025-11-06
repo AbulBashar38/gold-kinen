@@ -55,9 +55,7 @@ const OnlyCalculator = () => {
     const fetchMarketPrice = async () => {
       setMpLoading(true);
       try {
-        const res = await fetch(
-          "https://ygwr7rrpjj.execute-api.ap-southeast-1.amazonaws.com/Stage/market-price"
-        );
+        const res = await fetch("https://goldprice.gktechbd.com/market-price");
         const json = await res.json();
         if (json?.success && json?.data) {
           setMarketPrice(json.data.market_price || "");
