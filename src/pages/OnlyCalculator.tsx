@@ -128,7 +128,7 @@ const OnlyCalculator = () => {
                   : "text-white bg-blue-400 bg-opacity-30 hover:bg-opacity-50"
               }`}
             >
-              ${amount}
+              ৳{amount}
             </button>
           ))}
         </div>
