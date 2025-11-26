@@ -3,7 +3,6 @@ import CalculatorPage from "../pages/CalculatorPage";
 import ChartPage from "../pages/ChartPage";
 import ChartPageBangla from "../pages/ChartPageBangla";
 import OnlyCalculator from "../pages/OnlyCalculator";
-import OnlyCalculatorBangla from "../pages/OnlyCalculatorBangla";
 
 const router = createBrowserRouter([
   {
@@ -20,11 +19,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/only-calculator",
-    element: <OnlyCalculator />,
+    element: <OnlyCalculator lang="en" />,
   },
   {
     path: "/only-calculator-bangla",
-    element: <OnlyCalculatorBangla />,
+    element: <OnlyCalculator lang="bn" />,
   },
 ]);
 export default router;

@@ -1,6 +1,32 @@
 import { useEffect, useState } from "react";
 
-const OnlyCalculator = () => {
+// Function to convert English numerals to Bangla numerals
+const convertToBanglaNumerals = (str: string) => {
+  return str.replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[parseInt(d)]);
+};
+
+// Function to convert Bangla numerals to English numerals
+const convertFromBanglaNumerals = (str: string) => {
+  const banglaToEnglish: { [key: string]: string } = {
+    "০": "0",
+    "১": "1",
+    "২": "2",
+    "৩": "3",
+    "৪": "4",
+    "৫": "5",
+    "৬": "6",
+    "৭": "7",
+    "৮": "8",
+    "৯": "9",
+  };
+  return str.replace(/[০-৯]/g, (d) => banglaToEnglish[d]);
+};
+
+interface OnlyCalculatorProps {
+  lang: "en" | "bn";
+}
+
+const OnlyCalculator = ({ lang }: OnlyCalculatorProps) => {
   const [activeTab, setActiveTab] = useState<"gram" | "bhori">("gram");
   const [quantity, setQuantity] = useState<string>("");
   const [price, setPrice] = useState<string>("");
@@ -70,8 +96,27 @@ const OnlyCalculator = () => {
     fetchMarketPrice();
   }, []);
   // console.log({ marketPrice });
+  const transparent = lang === "en" ? false : true;
+
+  const priceList =
+    lang === "en"
+      ? [500, 1000, 5000, 6000]
+      : [
+          { value: 500, label: "৫০০" },
+          { value: 1000, label: "১০০০" },
+          { value: 5000, label: "৫০০০" },
+          { value: 6000, label: "৬০০০" },
+        ];
   return (
-    <main className="w-full h-full bg-transparent p-2">
+    <main
+      className={`w-full h-full bg-transparent p-2 ${
+        lang === "bn" ? "font-hind" : ""
+      } ${
+        transparent
+          ? "bg-transparent"
+          : "bg-gradient-to-br from-[#4786FF] to-[#2B5099]"
+      }`}
+    >
       {/* Tabs */}
       <div className="flex justify-center mb-6 sm:mb-8 gap-2 sm:gap-3">
         <button
@@ -82,7 +127,7 @@ const OnlyCalculator = () => {
               : "text-white hover:text-gray-300"
           }`}
         >
-          Gram
+          {lang === "bn" ? "গ্রাম" : "Gram"}
         </button>
         <button
           onClick={() => setActiveTab("bhori")}
@@ -92,45 +137,68 @@ const OnlyCalculator = () => {
               : "text-white hover:text-gray-300"
           }`}
         >
-          Bhori
+          {lang === "bn" ? "ভরি" : "Bhori"}
         </button>
       </div>
 
       {/* Price Display */}
       <div className="text-center mb-6 sm:mb-8">
         <p className="text-xl sm:text-2xl md:text-4xl font-bold text-white mb-1 sm:mb-2 break-words">
-          BDT{" "}
+          {lang === "bn" ? "টাকা" : "BDT"}{" "}
           {activeTab === "bhori"
-            ? pricePerBhori.toFixed(2) + "/Bhori"
+            ? lang === "bn"
+              ? convertToBanglaNumerals(pricePerBhori.toFixed(2)) + "/ভরি"
+              : pricePerBhori.toFixed(2) + "/Bhori"
+            : lang === "bn"
+            ? convertToBanglaNumerals(pricePerGram.toFixed(2)) + "/গ্রাম"
             : pricePerGram.toFixed(2) + "/Gram"}
         </p>
         <p className="text-xs sm:text-lg text-gray-300">
-          22k Market price today
+          {lang === "bn"
+            ? "আজকের 22k মার্কেট প্রাইস"
+            : "22k Market price today"}
         </p>
       </div>
 
       {/* Recommendation */}
       <div className="mb-6 sm:mb-14">
         <label className="block text-xs sm:text-xl font-medium text-white mb-2 sm:mb-3">
-          Recommendation
+          {lang === "bn" ? "প্রস্তাবিত মান" : "Recommendation"}
         </label>
         <div className="grid grid-cols-4 gap-2">
-          {[500, 1000, 5000, 6000].map((amount) => (
-            <button
-              key={amount}
-              onClick={() => {
-                setPrice(amount.toString());
-                setLastChanged("price");
-              }}
-              className={`px-2 py-1.5 md:px-3 md:py-2 text-xs sm:text-lg font-medium transition-colors rounded-full ${
-                price === amount.toString()
-                  ? "text-blue-600 bg-blue-50"
-                  : "text-white bg-blue-400 bg-opacity-30 hover:bg-opacity-50"
-              }`}
-            >
-              ৳{amount}
-            </button>
-          ))}
+          {lang === "en"
+            ? priceList.map((amount) => (
+                <button
+                  key={amount}
+                  onClick={() => {
+                    setPrice(amount.toString());
+                    setLastChanged("price");
+                  }}
+                  className={`px-2 py-1.5 md:px-3 md:py-2 text-xs sm:text-lg font-medium transition-colors rounded-full ${
+                    price === amount.toString()
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-white bg-blue-400 bg-opacity-30 hover:bg-opacity-50"
+                  }`}
+                >
+                  ৳{amount}
+                </button>
+              ))
+            : priceList.map((item) => (
+                <button
+                  key={item.value}
+                  onClick={() => {
+                    setPrice(item.value.toString());
+                    setLastChanged("price");
+                  }}
+                  className={`px-2 py-1.5 md:px-3 md:py-2 text-xs sm:text-lg font-medium transition-colors rounded-full ${
+                    price === item.value.toString()
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-white bg-blue-400 bg-opacity-30 hover:bg-opacity-50"
+                  }`}
+                >
+                  ৳{item.label}
+                </button>
+              ))}
         </div>
       </div>
 
@@ -138,39 +206,59 @@ const OnlyCalculator = () => {
       <div className="flex flex-col  items-end gap-3 sm:gap-8 mb-4  ">
         <div className="flex-1 w-full">
           <label className="block text-xs sm:text-xl font-medium text-white mb-1 sm:mb-2">
-            Quantity
+            {lang === "bn" ? "পরিমাণ" : "Quantity"}
           </label>
           <input
             type="text"
-            value={quantity}
+            value={lang === "bn" ? convertToBanglaNumerals(quantity) : quantity}
             onChange={(e) => {
               const value = e.target.value;
-              if (value === "" || /^\d*\.?\d*$/.test(value)) {
-                setQuantity(value);
-                setLastChanged("quantity");
+              if (lang === "en") {
+                if (value === "" || /^\d*\.?\d*$/.test(value)) {
+                  setQuantity(value);
+                  setLastChanged("quantity");
+                }
+              } else {
+                if (value === "" || /^[০-৯\d]*\.?[০-৯\d]*$/.test(value)) {
+                  setQuantity(convertFromBanglaNumerals(value));
+                  setLastChanged("quantity");
+                }
               }
             }}
             className="w-full px-2 sm:px-3 py-2 border border-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-sm sm:text-base"
-            placeholder={`Enter ${activeTab === "bhori" ? "Bhori" : "Grams"}`}
+            placeholder={
+              lang === "bn"
+                ? activeTab === "bhori"
+                  ? "ভরি লিখুন"
+                  : "গ্রাম লিখুন"
+                : `Enter ${activeTab === "bhori" ? "Bhori" : "Grams"}`
+            }
           />
         </div>
 
         <div className="flex-1 w-full">
           <label className="block text-xs sm:text-xl font-medium text-white mb-1 sm:mb-2">
-            Price (BDT)
+            {lang === "bn" ? "মূল্য (৳)" : "Price (BDT)"}
           </label>
           <input
             type="text"
-            value={price}
+            value={lang === "bn" ? convertToBanglaNumerals(price) : price}
             onChange={(e) => {
               const value = e.target.value;
-              if (value === "" || /^\d*\.?\d*$/.test(value)) {
-                setPrice(value);
-                setLastChanged("price");
+              if (lang === "en") {
+                if (value === "" || /^\d*\.?\d*$/.test(value)) {
+                  setPrice(value);
+                  setLastChanged("price");
+                }
+              } else {
+                if (value === "" || /^[০-৯\d]*\.?[০-৯\d]*$/.test(value)) {
+                  setPrice(convertFromBanglaNumerals(value));
+                  setLastChanged("price");
+                }
               }
             }}
             className="w-full px-2 sm:px-3 py-2 border border-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-sm sm:text-base"
-            placeholder="Enter value"
+            placeholder={lang === "bn" ? "মূল্য লিখুন" : "Enter value"}
           />
         </div>
       </div>

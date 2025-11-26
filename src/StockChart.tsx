@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from "chart.js";
 import Papa from "papaparse";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
 
 ChartJS.register(
@@ -82,7 +82,21 @@ const YearlySheetGID = "134202101";
 const SixYearSheetGID = "1063350062";
 const TenYearSheetGID = "653645493";
 
-export default function StockChart() {
+// Function to convert English numerals to Bangla numerals
+const convertToBanglaNumerals = (str: string) => {
+  return str.replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[parseInt(d)]);
+};
+
+// Function to format number with Bangla numerals
+const formatBanglaNumber = (num: number) => {
+  return convertToBanglaNumerals(num.toLocaleString("en-US"));
+};
+
+interface StockChartProps {
+  lang: "en" | "bn";
+}
+
+export default function StockChart({ lang }: StockChartProps) {
   // Set to true for transparent background, false for gradient background
   const transparent = true;
 
@@ -253,6 +267,84 @@ export default function StockChart() {
     fetchData();
   }, []);
 
+  const transformDataForRange = useCallback(
+    (range: TimeRange, year: string, data: GoldPriceData): StockData[] => {
+      const result: StockData[] = [];
+
+      switch (range) {
+        case "Yearly": {
+          // Show monthly data for selected year
+          const monthNames =
+            lang === "bn"
+              ? [
+                  "জানু",
+                  "ফেব্রু",
+                  "মার্চ",
+                  "এপ্রি",
+                  "মে",
+                  "জুন",
+                  "জুলা",
+                  "আগস্ট",
+                  "সেপ্ট",
+                  "অক্টো",
+                  "নভে",
+                  "ডিসে",
+                ]
+              : [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+          const yearData = data.yearlyData[year] || [];
+
+          yearData.forEach((price, index) => {
+            if (price > 0) {
+              result.push({
+                date: monthNames[index],
+                price: price,
+              });
+            }
+          });
+          break;
+        }
+        case "6Years": {
+          // Last 6 years
+          data.sixYearData.forEach((item) => {
+            result.push({
+              date:
+                lang === "bn" ? convertToBanglaNumerals(item.year) : item.year,
+              price: item.price,
+            });
+          });
+          break;
+        }
+        case "10Years": {
+          // Last 10 years
+          data.tenYearData.forEach((item) => {
+            result.push({
+              date:
+                lang === "bn" ? convertToBanglaNumerals(item.year) : item.year,
+              price: item.price,
+            });
+          });
+          break;
+        }
+      }
+
+      return result;
+    },
+    [lang]
+  );
+
   useEffect(() => {
     if (!chartData) return;
 
@@ -262,68 +354,7 @@ export default function StockChart() {
       chartData
     );
     setStockData(transformedData);
-  }, [selectedRange, selectedYear, chartData]);
-
-  const transformDataForRange = (
-    range: TimeRange,
-    year: string,
-    data: GoldPriceData
-  ): StockData[] => {
-    const result: StockData[] = [];
-
-    switch (range) {
-      case "Yearly": {
-        // Show monthly data for selected year
-        const monthNames = [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec",
-        ];
-        const yearData = data.yearlyData[year] || [];
-
-        yearData.forEach((price, index) => {
-          if (price > 0) {
-            result.push({
-              date: monthNames[index],
-              price: price,
-            });
-          }
-        });
-        break;
-      }
-      case "6Years": {
-        // Last 6 years
-        data.sixYearData.forEach((item) => {
-          result.push({
-            date: item.year,
-            price: item.price,
-          });
-        });
-        break;
-      }
-      case "10Years": {
-        // Last 10 years
-        data.tenYearData.forEach((item) => {
-          result.push({
-            date: item.year,
-            price: item.price,
-          });
-        });
-        break;
-      }
-    }
-
-    return result;
-  };
+  }, [selectedRange, selectedYear, chartData, transformDataForRange]);
 
   // const currentPrice =
   //   stockData.length > 0 ? stockData[stockData.length - 1].price : 0;
@@ -391,10 +422,12 @@ export default function StockChart() {
           label: function (context) {
             return (
               "৳ " +
-              context.parsed.y.toLocaleString("en-US", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })
+              (lang === "bn"
+                ? formatBanglaNumber(context.parsed.y)
+                : context.parsed.y.toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }))
             );
           },
         },
@@ -438,7 +471,12 @@ export default function StockChart() {
           },
           maxTicksLimit: window.innerWidth < 640 ? 4 : 5,
           callback: function (value) {
-            return "৳ " + value.toLocaleString();
+            return (
+              "৳ " +
+              (lang === "bn"
+                ? formatBanglaNumber(value as number)
+                : (value as number).toLocaleString())
+            );
           },
         },
       },
@@ -462,6 +500,8 @@ export default function StockChart() {
   return (
     <div
       className={`box-border w-full h-full ${
+        lang === "bn" ? "font-hind" : ""
+      } ${
         transparent
           ? "bg-transparent"
           : "bg-gradient-to-br from-[#4786FF] to-[#2B5099]"
@@ -488,9 +528,15 @@ export default function StockChart() {
                 }`}
               >
                 {range === "Yearly"
-                  ? "Yearly"
+                  ? lang === "bn"
+                    ? "বার্ষিক"
+                    : "Yearly"
                   : range === "6Years"
-                  ? "6 Years"
+                  ? lang === "bn"
+                    ? "৬ বছর"
+                    : "6 Years"
+                  : lang === "bn"
+                  ? "১০ বছর"
                   : "10 Years"}
               </button>
             ))}
@@ -509,7 +555,7 @@ export default function StockChart() {
                       : "bg-blue-400 bg-opacity-30 text-white hover:bg-opacity-50"
                   }`}
                 >
-                  {year}
+                  {lang === "bn" ? convertToBanglaNumerals(year) : year}
                 </button>
               ))}
             </div>

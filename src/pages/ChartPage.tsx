@@ -1,7 +1,7 @@
 import StockChart from "../StockChart";
 
 const ChartPage = () => {
-  return <StockChart />;
+  return <StockChart lang="en" />;
 };
 
 export default ChartPage;

@@ -1,7 +1,7 @@
-import StockChartBangla from "../StockChartBangla";
+import StockChart from "../StockChart";
 
 const ChartPageBangla = () => {
-  return <StockChartBangla />;
+  return <StockChart lang="bn" />;
 };
 
 export default ChartPageBangla;
