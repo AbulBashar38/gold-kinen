@@ -71,7 +71,7 @@ const OnlyCalculator = () => {
   }, []);
   // console.log({ marketPrice });
   return (
-    <main className="w-full h-full bg-blue-600 p-2">
+    <main className="w-full h-full bg-transparent p-2">
       {/* Tabs */}
       <div className="flex justify-center mb-6 sm:mb-8 gap-2 sm:gap-3">
         <button
@@ -135,7 +135,7 @@ const OnlyCalculator = () => {
       </div>
 
       {/* Inputs */}
-      <div className="flex flex-col  items-end gap-3 sm:gap-4 mb-4 ">
+      <div className="flex flex-col  items-end gap-3 sm:gap-8 mb-4 sm:mt-2 ">
         <div className="flex-1 w-full">
           <label className="block text-xs sm:text-xl font-medium text-white mb-1 sm:mb-2">
             Quantity
