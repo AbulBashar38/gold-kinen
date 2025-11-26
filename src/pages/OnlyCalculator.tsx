@@ -110,7 +110,7 @@ const OnlyCalculator = () => {
       </div>
 
       {/* Recommendation */}
-      <div className="mb-6 sm:mb-8">
+      <div className="mb-6 sm:mb-14">
         <label className="block text-xs sm:text-xl font-medium text-white mb-2 sm:mb-3">
           Recommendation
         </label>
@@ -135,7 +135,7 @@ const OnlyCalculator = () => {
       </div>
 
       {/* Inputs */}
-      <div className="flex flex-col  items-end gap-3 sm:gap-8 mb-4 sm:mt-2 ">
+      <div className="flex flex-col  items-end gap-3 sm:gap-8 mb-4  ">
         <div className="flex-1 w-full">
           <label className="block text-xs sm:text-xl font-medium text-white mb-1 sm:mb-2">
             Quantity
