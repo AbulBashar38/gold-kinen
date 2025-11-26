@@ -274,36 +274,20 @@ export default function StockChart({ lang }: StockChartProps) {
       switch (range) {
         case "Yearly": {
           // Show monthly data for selected year
-          const monthNames =
-            lang === "bn"
-              ? [
-                  "জানু",
-                  "ফেব্রু",
-                  "মার্চ",
-                  "এপ্রি",
-                  "মে",
-                  "জুন",
-                  "জুলা",
-                  "আগস্ট",
-                  "সেপ্ট",
-                  "অক্টো",
-                  "নভে",
-                  "ডিসে",
-                ]
-              : [
-                  "Jan",
-                  "Feb",
-                  "Mar",
-                  "Apr",
-                  "May",
-                  "Jun",
-                  "Jul",
-                  "Aug",
-                  "Sep",
-                  "Oct",
-                  "Nov",
-                  "Dec",
-                ];
+          const monthNames = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+          ];
           const yearData = data.yearlyData[year] || [];
 
           yearData.forEach((price, index) => {
