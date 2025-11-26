@@ -71,7 +71,7 @@ const OnlyCalculator = () => {
   }, []);
   // console.log({ marketPrice });
   return (
-    <main className="w-full h-full bg-transparent p-2">
+    <main className="w-full h-full bg-blue-600 p-2">
       {/* Tabs */}
       <div className="flex justify-center mb-6 sm:mb-8 gap-2 sm:gap-3">
         <button
@@ -98,20 +98,20 @@ const OnlyCalculator = () => {
 
       {/* Price Display */}
       <div className="text-center mb-6 sm:mb-8">
-        <p className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2 break-words">
+        <p className="text-xl sm:text-2xl md:text-4xl font-bold text-white mb-1 sm:mb-2 break-words">
           BDT{" "}
           {activeTab === "bhori"
             ? pricePerBhori.toFixed(2) + "/Bhori"
             : pricePerGram.toFixed(2) + "/Gram"}
         </p>
-        <p className="text-xs sm:text-sm text-gray-300">
+        <p className="text-xs sm:text-lg text-gray-300">
           22k Market price today
         </p>
       </div>
 
       {/* Recommendation */}
       <div className="mb-6 sm:mb-8">
-        <label className="block text-xs sm:text-sm font-medium text-white mb-2 sm:mb-3">
+        <label className="block text-xs sm:text-xl font-medium text-white mb-2 sm:mb-3">
           Recommendation
         </label>
         <div className="grid grid-cols-4 gap-2">
@@ -122,7 +122,7 @@ const OnlyCalculator = () => {
                 setPrice(amount.toString());
                 setLastChanged("price");
               }}
-              className={`px-2 py-1.5 md:px-3 md:py-2 text-xs md:text-sm font-medium transition-colors rounded-full ${
+              className={`px-2 py-1.5 md:px-3 md:py-2 text-xs sm:text-lg font-medium transition-colors rounded-full ${
                 price === amount.toString()
                   ? "text-blue-600 bg-blue-50"
                   : "text-white bg-blue-400 bg-opacity-30 hover:bg-opacity-50"
@@ -135,9 +135,9 @@ const OnlyCalculator = () => {
       </div>
 
       {/* Inputs */}
-      <div className="flex flex-col sm:flex-row items-end gap-3 sm:gap-4 mb-4 ">
+      <div className="flex flex-col  items-end gap-3 sm:gap-4 mb-4 ">
         <div className="flex-1 w-full">
-          <label className="block text-xs sm:text-sm font-medium text-white mb-1 sm:mb-2">
+          <label className="block text-xs sm:text-xl font-medium text-white mb-1 sm:mb-2">
             Quantity
           </label>
           <input
@@ -156,7 +156,7 @@ const OnlyCalculator = () => {
         </div>
 
         <div className="flex-1 w-full">
-          <label className="block text-xs sm:text-sm font-medium text-white mb-1 sm:mb-2">
+          <label className="block text-xs sm:text-xl font-medium text-white mb-1 sm:mb-2">
             Price (BDT)
           </label>
           <input
