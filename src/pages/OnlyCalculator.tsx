@@ -96,7 +96,7 @@ const OnlyCalculator = ({ lang }: OnlyCalculatorProps) => {
     fetchMarketPrice();
   }, []);
   // console.log({ marketPrice });
-  const transparent = lang === "en" ? false : true;
+  const transparent = true;
 
   const priceList =
     lang === "en"
