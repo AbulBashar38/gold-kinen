@@ -203,10 +203,12 @@ const OnlyCalculator = ({ lang }: OnlyCalculatorProps) => {
       </div>
 
       {/* Inputs */}
-      <div className="flex flex-col  items-end gap-3 sm:gap-8 mb-4  ">
+      <div className="flex flex-col   gap-3 sm:gap-8 mb-4  ">
         <div className="flex-1 w-full">
           <label className="block text-xs sm:text-xl font-medium text-white mb-1 sm:mb-2">
-            {lang === "bn" ? "পরিমাণ" : "Quantity"}
+            {lang === "bn"
+              ? `পরিমাণ ${activeTab === "bhori" ? "(ভরি)" : "(গ্রাম)"}`
+              : `Quantity ${activeTab === "bhori" ? "(Bhori)" : "(Grams)"}`}
           </label>
           <input
             type="text"
@@ -261,6 +263,13 @@ const OnlyCalculator = ({ lang }: OnlyCalculatorProps) => {
             placeholder={lang === "bn" ? "মূল্য লিখুন" : "Enter value"}
           />
         </div>
+        <p className="text-white text-xs sm:text-xl font-medium flex-1">
+          {`${
+            lang === "bn"
+              ? "*মূল্যে ভ্যাট অন্তর্ভুক্ত নয়"
+              : "*Price is exclusive of VAT"
+          }`}
+        </p>
       </div>
     </main>
   );
