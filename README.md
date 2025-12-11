@@ -14,8 +14,8 @@ A React-based gold price calculator application with support for both English an
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/AbulBashar38/gold-kinben.git
-cd gold-kinben
+git clone https://github.com/AbulBashar38/gold-kinen.git
+cd gold-kinen
 ```
 
 2. Install dependencies:
@@ -208,7 +208,3 @@ Language is passed as a prop to components, enabling:
 | `npm run build`   | Build for production     |
 | `npm run preview` | Preview production build |
 | `npm run lint`    | Run ESLint               |
-
-## 📄 License
-
-This project is open source and available under the MIT License.
