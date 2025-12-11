@@ -1,8 +1,8 @@
 // Gold calculator constants
 export const GRAMS_PER_BHORI = 11.66;
 
-// API endpoints
-export const MARKET_PRICE_API = "https://goldprice.gktechbd.com/market-price";
+// API endpoints (from environment variables)
+export const MARKET_PRICE_API = import.meta.env.VITE_MARKET_PRICE_API || "";
 
 // Default recommendation price amounts (in BDT)
 export const PRICE_RECOMMENDATIONS: {
@@ -35,11 +35,12 @@ export type UnitType = (typeof UNIT_TYPES)[keyof typeof UNIT_TYPES];
 export const CHART_CACHE_KEY = "goldPriceData";
 export const CHART_CACHE_DURATION = 60 * 1000; // 1 minute in milliseconds
 
+// Google Spreadsheet configuration (from environment variables)
 export const SPREADSHEET_CONFIG = {
-  id: "17l7gUNr1QBWjNxufOTS5A9zDOCw1qQb_s6BWiaieV5E",
-  yearlySheetGID: "134202101",
-  sixYearSheetGID: "1063350062",
-  tenYearSheetGID: "653645493",
+  id: import.meta.env.VITE_SPREADSHEET_ID || "",
+  yearlySheetGID: import.meta.env.VITE_YEARLY_SHEET_GID || "",
+  sixYearSheetGID: import.meta.env.VITE_SIX_YEAR_SHEET_GID || "",
+  tenYearSheetGID: import.meta.env.VITE_TEN_YEAR_SHEET_GID || "",
 };
 
 export type TimeRange = "Yearly" | "6Years" | "10Years";
