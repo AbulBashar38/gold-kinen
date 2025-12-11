@@ -1,4 +1,4 @@
-import StockChart from "../StockChart";
+import StockChart from "../components/StockChart";
 
 const ChartPage = () => {
   return <StockChart lang="en" />;
