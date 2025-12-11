@@ -1,4 +1,4 @@
-# Gold Kinben - Gold Price Calculator
+# Gold Kinen - Gold Price Calculator
 
 A React-based gold price calculator application with support for both English and Bangla languages. The app allows users to calculate gold prices in different units (gram/bhori) and displays historical gold price charts.
 
