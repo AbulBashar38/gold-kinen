@@ -178,7 +178,7 @@ export const useStockChartData = (
         // Parse yearly data
         Papa.parse(yearlyCSV, {
           header: false,
-          complete: (yearlyResult) => {
+          complete: (yearlyResult: Papa.ParseResult<string[]>) => {
             newData.yearlyData = parseYearlyData(yearlyResult);
 
             // Parse six-year data
