@@ -53,12 +53,11 @@ export const useCalculatorLogic = () => {
       try {
         const response = await fetch(MARKET_PRICE_API);
         const data = await response.json();
-        
 
         if (response.ok && data?.market_price) {
           setMarketPrice(data.market_price);
-        }else{
-          throw new Error("Failed to fetch market price")
+        } else {
+          throw new Error("Failed to fetch market price");
         }
       } catch (error) {
         console.error("Failed to fetch market price:", error);
