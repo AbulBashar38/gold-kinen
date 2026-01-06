@@ -11,7 +11,7 @@ A React-based gold price calculator application with support for both English an
 
 ### Installation
 
-1. Clone the repository:
+1. Clone the repository first:
 
 ```bash
 git clone https://github.com/AbulBashar38/gold-kinen.git
