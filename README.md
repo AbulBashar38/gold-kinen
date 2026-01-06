@@ -1,21 +1,5 @@
 # Gold Kinen - Gold Price Calculator
 
-> ⚠️ **IMPORTANT NOTICE**
->
-> This is the **legacy/live version** of the application. The code in this branch is **NOT refactored** and contains duplicate code, hardcoded values, and lacks proper separation of concerns.
->
-> **👉 Highly recommended to use the refactored code from the [`refector-code`](https://github.com/AbulBashar38/gold-kinen/tree/refector-code) branch.**
->
-> The refactored version includes:
->
-> - ✅ Proper component splitting
-> - ✅ Custom hooks for business logic
-> - ✅ Centralized utilities and constants
-> - ✅ Environment variable support
-> - ✅ Better code organization and maintainability
-
----
-
 A React-based gold price calculator application with support for both English and Bangla languages. The app allows users to calculate gold prices in different units (gram/bhori) and displays historical gold price charts.
 
 ## 🚀 Getting Started
@@ -40,50 +24,149 @@ cd gold-kinen
 npm install
 ```
 
-3. Start the development server:
+3. Create a `.env` file in the root directory and add the following environment variables:
+
+```env
+# API Configuration
+VITE_MARKET_PRICE_API=
+
+# Google Spreadsheet Configuration
+VITE_SPREADSHEET_ID=
+VITE_YEARLY_SHEET_GID=
+VITE_SIX_YEAR_SHEET_GID=
+VITE_TEN_YEAR_SHEET_GID=
+```
+
+4. Start the development server:
 
 ```bash
 npm run dev
 ```
 
-> **Note:** This version has hardcoded API URLs and spreadsheet IDs. For environment variable support, switch to the `refector-code` branch.
-
 ## 📁 Project Structure
 
 ```
 src/
+├── components/          # Reusable UI components
+│   ├── chart/          # Chart-related components
+│   │   ├── ChartLoading.tsx      # Loading spinner for chart
+│   │   ├── ChartRangeTabs.tsx    # Time range tabs (Yearly/6Years/10Years)
+│   │   ├── ChartYearSelector.tsx # Year selection buttons
+│   │   └── index.ts              # Barrel export
+│   ├── CalculatorInputs.tsx      # Quantity and price input fields
+│   ├── CalculatorTabs.tsx        # Gram/Bhori unit tabs
+│   ├── PriceDisplay.tsx          # Market price display component
+│   ├── RecommendationButtons.tsx # Quick price selection buttons
+│   └── StockChart.tsx            # Main chart component
+├── hooks/               # Custom React hooks
+│   ├── useCalculatorLogic.ts     # Calculator business logic
+│   └── useStockChartData.ts      # Chart data fetching & management
 ├── pages/               # Page components
-│   ├── CalculatorPage.tsx        # Full calculator with unit conversion
-│   ├── ChartPage.tsx             # English chart page
-│   ├── ChartPageBangla.tsx       # Bangla chart page
-│   └── OnlyCalculator.tsx        # Simple calculator (supports lang prop)
+│   └── OnlyCalculator.tsx        # Main calculator page
 ├── router/              # Routing configuration
 │   └── Routes.tsx                # App routes definition
-├── StockChart.tsx       # Chart component with data fetching
+├── utils/               # Utility functions and constants
+│   ├── constant.ts               # App constants and configuration
+│   └── utils.ts                  # Helper functions
 ├── App.tsx              # Root component
 ├── main.tsx             # App entry point
 └── index.css            # Global styles
 ```
 
-## 🧩 Pages & Components
+## 🧩 Components
 
-### Pages
+### Calculator Components
 
-| Page              | Route                     | Description                                    |
-| ----------------- | ------------------------- | ---------------------------------------------- |
-| `ChartPage`       | `/`                       | English gold price chart                       |
-| `ChartPageBangla` | `/bangla-chart`           | Bangla gold price chart                        |
-| `CalculatorPage`  | `/calculator`             | Full calculator with vori/ana/roti/point units |
-| `OnlyCalculator`  | `/only-calculator`        | Simple gram/bhori calculator (English)         |
-| `OnlyCalculator`  | `/only-calculator-bangla` | Simple gram/bhori calculator (Bangla)          |
+| Component               | Description                                                        |
+| ----------------------- | ------------------------------------------------------------------ |
+| `OnlyCalculator`        | Main calculator page with language support (`lang` prop)           |
+| `CalculatorTabs`        | Toggle between Gram and Bhori units                                |
+| `CalculatorInputs`      | Input fields for quantity and price with bidirectional calculation |
+| `PriceDisplay`          | Displays current market price with proper formatting               |
+| `RecommendationButtons` | Quick selection buttons for common price amounts                   |
 
-### Components
+### Chart Components
 
-| Component        | Description                                                |
-| ---------------- | ---------------------------------------------------------- |
-| `StockChart`     | Main chart component with data fetching from Google Sheets |
-| `OnlyCalculator` | Calculator with bidirectional quantity/price calculation   |
-| `CalculatorPage` | Advanced calculator with traditional unit conversions      |
+| Component           | Description                                               |
+| ------------------- | --------------------------------------------------------- |
+| `StockChart`        | Main chart component displaying gold price history        |
+| `ChartRangeTabs`    | Tabs for selecting time range (Yearly, 6 Years, 10 Years) |
+| `ChartYearSelector` | Year selection for yearly view                            |
+| `ChartLoading`      | Loading spinner while fetching chart data                 |
+
+## 🪝 Custom Hooks
+
+### `useCalculatorLogic`
+
+Manages calculator state and business logic:
+
+- Market price fetching from API
+- Bidirectional calculation (quantity ↔ price)
+- Unit conversion (gram/bhori)
+- Input validation
+
+```typescript
+const {
+  marketPrice,
+  loading,
+  unit,
+  setUnit,
+  quantity,
+  price,
+  handleQuantityChange,
+  handlePriceChange,
+  setPrice,
+} = useCalculatorLogic(lang);
+```
+
+### `useStockChartData`
+
+Handles chart data fetching and transformation:
+
+- Fetches data from Google Sheets
+- Caches data in localStorage (1 minute)
+- Transforms data based on selected time range
+- Supports fallback data
+
+```typescript
+const {
+  stockData,
+  loading,
+  selectedRange,
+  setSelectedRange,
+  selectedYear,
+  setSelectedYear,
+  availableYears,
+} = useStockChartData(lang);
+```
+
+## 🛠️ Utilities
+
+### `utils.ts`
+
+| Function                                 | Description                                    |
+| ---------------------------------------- | ---------------------------------------------- |
+| `convertToBanglaNumerals(str)`           | Converts English numerals to Bangla (০-৯)      |
+| `convertFromBanglaNumerals(str)`         | Converts Bangla numerals to English            |
+| `isValidNumberInput(value, lang)`        | Validates numeric input for both languages     |
+| `formatNumber(num, decimals)`            | Formats number with specified decimal places   |
+| `calculatePrice(quantity, pricePerUnit)` | Calculates total price from quantity           |
+| `calculateQuantity(price, pricePerUnit)` | Calculates quantity from price                 |
+| `formatBanglaNumber(num)`                | Formats number with Bangla numerals and locale |
+| `formatCurrency(value, lang, decimals)`  | Formats currency based on language             |
+
+### `constant.ts`
+
+| Constant                | Description                               |
+| ----------------------- | ----------------------------------------- |
+| `GRAMS_PER_BHORI`       | Conversion factor (11.66 grams per bhori) |
+| `MARKET_PRICE_API`      | API endpoint for market price             |
+| `PRICE_RECOMMENDATIONS` | Quick price selection options             |
+| `UNIT_TYPES`            | Available unit types (gram/bhori)         |
+| `SPREADSHEET_CONFIG`    | Google Sheets configuration               |
+| `TIME_RANGES`           | Available chart time ranges               |
+| `TIME_RANGE_LABELS`     | Localized labels for time ranges          |
+| `CHART_FALLBACK_DATA`   | Fallback data when API fails              |
 
 ## 🌐 Language Support
 
@@ -98,15 +181,13 @@ Language is passed as a prop to components, enabling:
 - Localized labels and text
 - Custom font (Hind Siliguri) for Bangla text
 
-## ⚠️ Known Issues (Legacy Code)
+## 📊 Data Sources
 
-- Hardcoded API URLs and spreadsheet IDs
-- Duplicate utility functions across files (`convertToBanglaNumerals`, etc.)
-- No separation of concerns (business logic mixed with UI)
-- No custom hooks for reusable logic
-- Separate page files for English/Bangla versions
-
-**Solution:** Switch to the [`refector-code`](https://github.com/AbulBashar38/gold-kinen/tree/refector-code) branch for the improved version.
+- **Market Price**: Fetched from configured API endpoint
+- **Historical Data**: Fetched from Google Sheets (CSV format)
+  - Yearly data (monthly prices)
+  - 6-year historical data
+  - 10-year historical data
 
 ## 🔧 Tech Stack
 
