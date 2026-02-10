@@ -43,14 +43,20 @@ export const SPREADSHEET_CONFIG = {
   tenYearSheetGID: import.meta.env.VITE_TEN_YEAR_SHEET_GID || "",
 };
 
-export type TimeRange = "Yearly" | "6Years" | "10Years";
+export type TimeRange = "1Year" | "3Years" | "5Years" | "10Years";
 
-export const TIME_RANGES: TimeRange[] = ["Yearly", "6Years", "10Years"];
+export const TIME_RANGES: TimeRange[] = [
+  "1Year",
+  "3Years",
+  "5Years",
+  "10Years",
+];
 
 export const TIME_RANGE_LABELS: Record<TimeRange, { en: string; bn: string }> =
   {
-    Yearly: { en: "Yearly", bn: "বার্ষিক" },
-    "6Years": { en: "6 Years", bn: "৬ বছর" },
+    "1Year": { en: "1 Year", bn: "১ বছর" },
+    "3Years": { en: "3 Years", bn: "৩ বছর" },
+    "5Years": { en: "5 Years", bn: "৫ বছর" },
     "10Years": { en: "10 Years", bn: "১০ বছর" },
   };
 
@@ -97,6 +103,18 @@ export const CHART_FALLBACK_DATA = {
       101208.8, 101208.8, 102841.2, 109867.2, 111003.2,
     ],
   },
+  threeYearData: [
+    { year: "2023", price: 111003.2 },
+    { year: "2024", price: 143476.3 },
+    { year: "2025", price: 142741.72 },
+  ],
+  fiveYearData: [
+    { year: "2021", price: 74300.0 },
+    { year: "2022", price: 91912.0 },
+    { year: "2023", price: 111003.2 },
+    { year: "2024", price: 143476.3 },
+    { year: "2025", price: 142741.72 },
+  ],
   sixYearData: [
     { year: "2019", price: 59186.16 },
     { year: "2020", price: 76341.0 },

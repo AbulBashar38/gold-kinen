@@ -11,9 +11,9 @@ import {
 } from "chart.js";
 import { useRef } from "react";
 import { Line } from "react-chartjs-2";
-import { ChartLoading, ChartRangeTabs, ChartYearSelector } from "./chart";
 import { useStockChartData } from "../hooks/useStockChartData";
 import { formatBanglaNumber } from "../utils/utils";
+import { ChartLoading, ChartRangeTabs } from "./chart";
 
 // Register Chart.js components
 ChartJS.register(
@@ -22,7 +22,7 @@ ChartJS.register(
   PointElement,
   LineElement,
   Filler,
-  Tooltip
+  Tooltip,
 );
 
 interface StockChartProps {
@@ -60,7 +60,7 @@ const buildChartDataConfig = (prices: number[], labels: string[]) => ({
 const buildChartOptions = (
   minPrice: number,
   maxPrice: number,
-  lang: "en" | "bn"
+  lang: "en" | "bn",
 ): ChartOptions<"line"> => ({
   responsive: true,
   maintainAspectRatio: false,
@@ -140,15 +140,8 @@ export default function StockChart({ lang }: StockChartProps) {
 
   const chartRef = useRef<ChartJS<"line">>(null);
 
-  const {
-    stockData,
-    loading,
-    selectedRange,
-    setSelectedRange,
-    selectedYear,
-    setSelectedYear,
-    availableYears,
-  } = useStockChartData(lang);
+  const { stockData, loading, selectedRange, setSelectedRange } =
+    useStockChartData(lang);
 
   if (loading) {
     return <ChartLoading transparent={transparent} />;
@@ -180,14 +173,14 @@ export default function StockChart({ lang }: StockChartProps) {
             lang={lang}
           />
 
-          {selectedRange === "Yearly" && (
+          {/* {selectedRange === "1Year" && (
             <ChartYearSelector
               selectedYear={selectedYear}
               availableYears={availableYears}
               onYearChange={setSelectedYear}
               lang={lang}
             />
-          )}
+          )} */}
         </div>
 
         <div className="w-full aspect-[3/2]">
